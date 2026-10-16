@@ -937,3 +937,14 @@ input {
 
     pointer-events: none;
 }
+
+
+/* ==============================
+   スマホのズーム操作を防止
+============================== */
+
+html,
+body {
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+}
