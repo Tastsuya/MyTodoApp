@@ -1,13 +1,18 @@
+/* ==============================
+   基本設定
+============================== */
 
-/* すべての要素で、余白を計算しやすくする */
 * {
     box-sizing: border-box;
 }
 
-/* 画面全体の基本設定 */
+html {
+    background: #f4f7fb;
+}
+
 body {
     margin: 0;
-    padding: 24px 16px;
+
     font-family:
         -apple-system,
         BlinkMacSystemFont,
@@ -15,218 +20,920 @@ body {
         "Hiragino Kaku Gothic ProN",
         "Yu Gothic",
         sans-serif;
-    background-color: #f4f7fb;
-    color: #243247;
-    line-height: 1.6;
+
+    background:
+        linear-gradient(
+            180deg,
+            #eef5f8 0%,
+            #f7f9fc 100%
+        );
+
+    color: #17263c;
+
+    min-height: 100vh;
 }
 
-/* アプリ本体。スマートフォンでも横に広がりすぎないようにする */
-.app {
+
+/* ==============================
+   緑色ヘッダー
+============================== */
+
+.hero {
+    padding:
+        calc(20px + env(safe-area-inset-top))
+        20px
+        42px;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #19d878 0%,
+            #00b986 55%,
+            #009e88 100%
+        );
+
+    border-radius:
+        0 0 32px 32px;
+
+    box-shadow:
+        0 8px 30px
+        rgba(0, 170, 120, 0.15);
+}
+
+.hero-inner {
     width: 100%;
     max-width: 520px;
     margin: 0 auto;
 }
 
-/* タイトル部分 */
-.app-header {
-    margin-bottom: 24px;
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
 }
 
-.app-header h1 {
+.app-icon {
+    width: 58px;
+    height: 58px;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 6px 16px
+        rgba(0, 80, 60, 0.25);
+}
+
+.brand h1 {
     margin: 0;
-    font-size: 32px;
-    color: #24446b;
+
+    font-size: 30px;
+    line-height: 1.1;
+
+    letter-spacing: -0.5px;
 }
 
-.app-header p {
-    margin: 4px 0 0;
-    color: #718096;
+.brand p {
+    margin: 5px 0 0;
+
+    color:
+        rgba(255, 255, 255, 0.9);
+
     font-size: 14px;
 }
 
-/* タスク件数を横に3つ並べる */
-.summary {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
-    margin-bottom: 28px;
-}
 
-/* 件数カードのデザイン */
-.summary-card {
-    padding: 14px 8px;
-    background-color: #ffffff;
-    border: 1px solid #e1e8f0;
-    border-radius: 14px;
-    text-align: center;
-}
+/* ==============================
+   ログイン
+============================== */
 
-/* 件数カードの説明 */
-.summary-card span {
-    display: block;
-    color: #718096;
-    font-size: 12px;
-}
+.login-area {
+    margin-top: 16px;
 
-/* 件数の数字 */
-.summary-card strong {
-    display: block;
-    margin-top: 4px;
-    color: #24446b;
-    font-size: 24px;
-}
-
-/* 入力欄とタスク一覧の見出し */
-.add-section h2,
-.list-section h2 {
-    margin: 0 0 12px;
-    font-size: 18px;
-}
-
-/* 入力欄と追加ボタンを横並びにする */
-#todo-form {
     display: flex;
-    gap: 8px;
+    justify-content: flex-end;
 }
 
-/* タスク入力欄 */
-#todo-input {
-    min-width: 0;
-    flex: 1;
-    padding: 13px 12px;
-    border: 1px solid #d6deea;
-    border-radius: 10px;
-    background-color: #ffffff;
-    color: #243247;
-    font-size: 16px;
-}
+.login-button,
+.logout-button {
+    padding: 8px 15px;
 
-/* 入力欄が選択されたときの枠線 */
-#todo-input:focus {
-    outline: 2px solid #9bbce9;
-    outline-offset: 1px;
-}
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.55);
 
-/* 追加ボタン */
-.add-button {
-    padding: 12px 18px;
-    border: none;
-    border-radius: 10px;
-    background-color: #3678d4;
-    color: #ffffff;
-    font-size: 16px;
-    font-weight: bold;
+    border-radius: 999px;
+
+    background:
+        rgba(255, 255, 255, 0.15);
+
+    color: white;
+
+    font-size: 13px;
+    font-weight: 700;
+
     cursor: pointer;
+
+    backdrop-filter: blur(8px);
 }
 
-/* ボタンを押せることがわかるようにする */
-.add-button:active {
-    background-color: #245da9;
+.login-button:active,
+.logout-button:active {
+    transform: scale(0.97);
 }
 
-/* タスク一覧の領域 */
-.list-section {
-    margin-top: 32px;
+
+/* ==============================
+   アプリ本体
+============================== */
+
+.app {
+    width: 100%;
+    max-width: 520px;
+
+    margin: 0 auto;
+
+    padding:
+        0 16px
+        calc(30px + env(safe-area-inset-bottom));
 }
 
-/* タスク一覧の余白をリセットする */
-#todo-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
 
-/* タスク1件分のカード */
-.todo-item {
+/* ==============================
+   ユーザー
+============================== */
+
+.user-section {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 14px 12px;
-    background-color: #ffffff;
-    border: 1px solid #e1e8f0;
-    border-radius: 12px;
+    gap: 10px;
+
+    margin-top: -20px;
+    margin-bottom: 18px;
+
+    padding: 13px 16px;
+
+    background: white;
+
+    border:
+        1px solid
+        rgba(215, 225, 235, 0.8);
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 8px 24px
+        rgba(30, 60, 90, 0.08);
 }
 
-/* 完了チェックボックスを押しやすくする */
-.todo-checkbox {
+.user-icon {
+    display: grid;
+    place-items: center;
+
+    width: 34px;
+    height: 34px;
+
     flex-shrink: 0;
-    width: 22px;
-    height: 22px;
-    margin: 0;
-    accent-color: #3678d4;
-    cursor: pointer;
+
+    border-radius: 50%;
+
+    background: #edf3f7;
+
+    font-size: 17px;
 }
 
-/* タスク名。長い文字列も折り返す */
-.todo-text {
-    flex: 1;
-    min-width: 0;
+#user-info {
+    margin: 0;
+
+    color: #53657b;
+
+    font-size: 14px;
+    font-weight: 600;
+
     overflow-wrap: anywhere;
+}
+
+
+/* ==============================
+   件数カード
+============================== */
+
+.summary {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 10px;
+
+    margin-bottom: 18px;
+}
+
+.summary-card {
+    padding: 16px 8px;
+
+    text-align: center;
+
+    background:
+        rgba(255, 255, 255, 0.94);
+
+    border:
+        1px solid #e5ebf1;
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 7px 22px
+        rgba(35, 60, 90, 0.06);
+}
+
+.summary-icon {
+    display: grid;
+    place-items: center;
+
+    width: 32px;
+    height: 32px;
+
+    margin:
+        0 auto 8px;
+
+    border-radius: 50%;
+
+    color: white;
+
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.all-icon {
+    background: #4388ee;
+}
+
+.remaining-icon {
+    background: #ffb020;
+}
+
+.completed-icon {
+    background: #16c784;
+}
+
+.summary-card span {
+    display: block;
+
+    color: #697a8e;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.summary-card strong {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #17263c;
+
+    font-size: 25px;
+}
+
+
+/* ==============================
+   タスク追加カード
+============================== */
+
+.add-card {
+    margin-bottom: 28px;
+
+    padding: 17px;
+
+    background: white;
+
+    border:
+        1px solid #e4ebf1;
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 8px 24px
+        rgba(30, 60, 90, 0.06);
+}
+
+.add-card h2 {
+    margin:
+        0 0 11px;
+
+    color: #00a976;
+
     font-size: 15px;
 }
 
-/* 完了したタスクの文字 */
-.todo-item.is-completed .todo-text {
-    color: #8995a5;
-    text-decoration: line-through;
+.input-row {
+    display: flex;
+    gap: 9px;
 }
 
-/* 削除ボタン */
-.delete-button {
+#task-input {
+    min-width: 0;
+    flex: 1;
+
+    padding:
+        13px 14px;
+
+    border:
+        1.5px solid #dbe4ed;
+
+    border-radius: 14px;
+
+    background: #fbfcfe;
+
+    color: #17263c;
+
+    font-size: 16px;
+
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+}
+
+#task-input::placeholder {
+    color: #9ca9b8;
+}
+
+#task-input:focus {
+    outline: none;
+
+    border-color: #16c784;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(22, 199, 132, 0.12);
+}
+
+#add-button {
+    width: 50px;
+    height: 50px;
+
     flex-shrink: 0;
-    padding: 8px 10px;
+
     border: none;
+
+    border-radius: 15px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #19d878,
+            #00ad82
+        );
+
+    color: white;
+
+    font-size: 29px;
+    font-weight: 300;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 6px 16px
+        rgba(0, 180, 125, 0.25);
+}
+
+#add-button:active {
+    transform: scale(0.94);
+}
+
+
+/* ==============================
+   タスク一覧
+============================== */
+
+.task-section {
+    margin-top: 4px;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+
+    margin-bottom: 12px;
+}
+
+.section-title h2 {
+    margin: 0;
+
+    color: #17263c;
+
+    font-size: 24px;
+}
+
+#task-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+}
+
+
+/* ==============================
+   JavaScriptで生成される
+   タスクカード
+============================== */
+
+.todo-item,
+#task-list li {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    min-height: 68px;
+
+    padding: 13px 14px;
+
+    background: white;
+
+    border:
+        1px solid #e2e9f0;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 6px 20px
+        rgba(30, 60, 90, 0.055);
+}
+
+.todo-checkbox,
+#task-list input[type="checkbox"] {
+    appearance: none;
+
+    width: 27px;
+    height: 27px;
+
+    flex-shrink: 0;
+
+    margin: 0;
+
+    border:
+        2px solid #a7b0ba;
+
     border-radius: 8px;
-    background-color: #fff0f0;
-    color: #c13e3e;
+
+    background: white;
+
+    cursor: pointer;
+
+    position: relative;
+}
+
+.todo-checkbox:checked,
+#task-list input[type="checkbox"]:checked {
+    border-color: #16c784;
+
+    background: #16c784;
+}
+
+.todo-checkbox:checked::after,
+#task-list input[type="checkbox"]:checked::after {
+    content: "✓";
+
+    position: absolute;
+
+    left: 50%;
+    top: 47%;
+
+    transform:
+        translate(-50%, -50%);
+
+    color: white;
+
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.todo-text,
+#task-list li span {
+    flex: 1;
+
+    min-width: 0;
+
+    color: #17263c;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    overflow-wrap: anywhere;
+}
+
+.todo-item.is-completed .todo-text {
+    color: #9aa7b5;
+
+    text-decoration:
+        line-through;
+}
+
+
+/* ==============================
+   削除ボタン
+============================== */
+
+.delete-button,
+#task-list li button {
+    flex-shrink: 0;
+
+    padding:
+        9px 11px;
+
+    border: none;
+
+    border-radius: 11px;
+
+    background: #fff0f1;
+
+    color: #e24950;
+
     font-size: 13px;
+    font-weight: 700;
+
     cursor: pointer;
 }
 
-/* タスクがないときのメッセージ */
+.delete-button:active,
+#task-list li button:active {
+    transform: scale(0.95);
+}
+
+
+/* ==============================
+   タスクがない場合
+============================== */
+
 #empty-message {
-    padding: 24px 12px;
-    color: #8995a5;
+    margin: 0;
+
+    padding: 28px 16px;
+
     text-align: center;
+
+    color: #8b99aa;
+
+    background: white;
+
+    border:
+        1px solid #e3eaf1;
+
+    border-radius: 18px;
+
     font-size: 14px;
 }
 
-/* JavaScriptで非表示にするときに使う */
+
+/* ==============================
+   クラウド同期
+============================== */
+
+.cloud-info {
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+
+    margin-top: 26px;
+
+    padding: 15px 17px;
+
+    border:
+        1px solid
+        rgba(20, 190, 130, 0.12);
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e9faf3,
+            #f2fbf8
+        );
+}
+
+.cloud-icon {
+    display: grid;
+    place-items: center;
+
+    width: 38px;
+    height: 38px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: white;
+
+    font-size: 20px;
+}
+
+.cloud-info strong {
+    color: #087b5b;
+
+    font-size: 13px;
+}
+
+.cloud-info p {
+    margin: 2px 0 0;
+
+    color: #61766e;
+
+    font-size: 11px;
+
+    line-height: 1.5;
+}
+
+
+/* ==============================
+   共通
+============================== */
+
+button {
+    font-family: inherit;
+}
+
+button,
+input {
+    -webkit-tap-highlight-color:
+        transparent;
+}
+
 .is-hidden {
-    display: none;
+    display: none !important;
 }
 
-/* 視覚的には隠しつつ、読み上げ機能では使えるラベル */
-.visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-    border: 0;
-}
 
-/* 画面が特に狭いスマートフォンでの調整 */
+/* ==============================
+   小さいiPhone
+============================== */
+
 @media (max-width: 360px) {
-    body {
-        padding: 18px 12px;
+
+    .app {
+        padding-left: 12px;
+        padding-right: 12px;
     }
 
-    .app-header h1 {
-        font-size: 28px;
+    .hero {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .brand h1 {
+        font-size: 27px;
+    }
+
+    .app-icon {
+        width: 52px;
+        height: 52px;
     }
 
     .summary {
-        gap: 6px;
+        gap: 7px;
     }
 
-    .add-button {
-        padding: 12px;
+    .summary-card {
+        padding:
+            14px 5px;
     }
+
+    .summary-card strong {
+        font-size: 22px;
+    }
+}
+/* ==============================
+   タスクフィルター
+============================== */
+
+.section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    margin-bottom: 12px;
+}
+
+.filter-buttons {
+    display: flex;
+
+    padding: 3px;
+
+    background: #e9eef3;
+
+    border-radius: 999px;
+}
+
+.filter-button {
+    padding: 7px 12px;
+
+    border: none;
+    border-radius: 999px;
+
+    background: transparent;
+
+    color: #7b8999;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s,
+        color 0.2s,
+        transform 0.15s;
+}
+
+.filter-button.active {
+    background:
+        linear-gradient(
+            135deg,
+            #19d878,
+            #00ad82
+        );
+
+    color: white;
+
+    box-shadow:
+        0 3px 9px
+        rgba(0, 175, 125, 0.22);
+}
+
+.filter-button:active {
+    transform: scale(0.95);
+}
+
+
+@media (max-width: 400px) {
+
+    .section-title {
+        align-items: flex-end;
+    }
+
+    .section-title h2 {
+        font-size: 21px;
+    }
+
+    .filter-button {
+        padding: 6px 9px;
+        font-size: 11px;
+    }
+}
+
+/* ==============================
+   ゴミ箱ボタン
+============================== */
+
+.delete-button {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border: none;
+    border-radius: 12px;
+
+    background: transparent;
+    color: #8b98a7;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.15s ease;
+}
+
+.delete-button svg {
+    width: 21px;
+    height: 21px;
+}
+
+
+/* PCでマウスを乗せたとき */
+
+.delete-button:hover {
+    background: #fff0f0;
+    color: #ff5a5f;
+}
+
+
+/* 押した瞬間 */
+
+.delete-button:active {
+    transform: scale(0.88);
+}
+
+
+/* ==============================
+   タスク追加アニメーション
+============================== */
+
+.task-enter {
+    opacity: 0;
+
+    transform:
+        translateY(12px)
+        scale(0.98);
+
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
+}
+
+.task-enter.task-enter-active {
+    opacity: 1;
+
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+
+/* ==============================
+   通常のタスクカード
+============================== */
+
+.todo-item {
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease,
+        background 0.25s ease;
+}
+
+.todo-text {
+    position: relative;
+
+    transition:
+        color 0.25s ease,
+        opacity 0.25s ease;
+}
+
+
+/* ==============================
+   完了したタスク
+============================== */
+
+.todo-item.is-completed {
+    background: #f7faf9;
+}
+
+.todo-item.is-completed .todo-text {
+    color: #9aa5b1;
+    opacity: 0.75;
+
+    text-decoration: line-through;
+}
+
+
+/* 完了状態を切り替えた瞬間 */
+
+.todo-item.just-changed {
+    transform: scale(0.985);
+}
+
+
+/* ==============================
+   チェックボックス
+============================== */
+
+.todo-checkbox {
+    transition:
+        transform 0.2s ease;
+}
+
+.todo-checkbox:checked {
+    transform: scale(1.08);
+}
+
+
+/* ==============================
+   削除アニメーション
+============================== */
+
+.todo-item.deleting {
+    opacity: 0;
+
+    transform:
+        translateX(-35px)
+        scale(0.96);
+
+    pointer-events: none;
 }

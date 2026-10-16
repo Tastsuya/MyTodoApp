@@ -85,6 +85,10 @@ const remainingCount =
 const completedCount =
     document.getElementById("completed-count");
 
+// フィルターボタン
+const filterButtons =
+    document.querySelectorAll(".filter-button");
+
 
 // ==============================
 // 4. アプリで使用する変数
@@ -99,107 +103,158 @@ let todos = [];
 // Firestoreの監視を解除するための変数
 let unsubscribeTodos = null;
 
+// 現在選択しているフィルター
+// all       → すべて
+// remaining → 未完了
+// completed → 完了
+let currentFilter = "all";
+
+// 最初のFirestore読み込みが終わったか
+let initialLoadFinished = false;
+
+// 新しく追加したタスクのID
+// このタスクだけ追加アニメーションさせる
+let newlyAddedTodoId = null;
+
 
 // ==============================
 // 5. Googleログイン
 // ==============================
 
-loginButton.addEventListener("click", async () => {
+loginButton.addEventListener(
+    "click",
+    async () => {
 
-    try {
+        try {
 
-        await signInWithPopup(auth, provider);
+            await signInWithPopup(
+                auth,
+                provider
+            );
 
-    } catch (error) {
+        } catch (error) {
 
-        console.error("ログインエラー:", error);
+            console.error(
+                "ログインエラー:",
+                error
+            );
+
+        }
 
     }
-
-});
+);
 
 
 // ==============================
 // 6. ログアウト
 // ==============================
 
-logoutButton.addEventListener("click", async () => {
+logoutButton.addEventListener(
+    "click",
+    async () => {
 
-    try {
+        try {
 
-        await signOut(auth);
+            await signOut(auth);
 
-    } catch (error) {
+        } catch (error) {
 
-        console.error("ログアウトエラー:", error);
+            console.error(
+                "ログアウトエラー:",
+                error
+            );
+
+        }
 
     }
-
-});
+);
 
 
 // ==============================
 // 7. ログイン状態を確認
 // ==============================
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(
+    auth,
+    (user) => {
 
-    // 前のFirestore監視があれば解除
-    if (unsubscribeTodos !== null) {
+        // 前のFirestore監視があれば解除
+        if (unsubscribeTodos !== null) {
 
-        unsubscribeTodos();
+            unsubscribeTodos();
 
-        unsubscribeTodos = null;
+            unsubscribeTodos = null;
+
+        }
+
+
+        if (user) {
+
+            // --------------------------
+            // ログインしている場合
+            // --------------------------
+
+            currentUser = user;
+
+            console.log(
+                "ログインしました"
+            );
+
+            console.log(user);
+
+            userInfo.textContent =
+                `${user.displayName} でログイン中`;
+
+            loginButton.style.display =
+                "none";
+
+            logoutButton.style.display =
+                "inline-block";
+
+            // 入力を許可
+            todoInput.disabled = false;
+
+            // 初回読み込み状態をリセット
+            initialLoadFinished = false;
+
+            // FirestoreのToDoを監視
+            startTodoListener();
+
+        } else {
+
+            // --------------------------
+            // ログアウトしている場合
+            // --------------------------
+
+            console.log(
+                "ログアウトしています"
+            );
+
+            currentUser = null;
+
+            todos = [];
+
+            newlyAddedTodoId = null;
+
+            initialLoadFinished = false;
+
+            userInfo.textContent = "";
+
+            loginButton.style.display =
+                "inline-block";
+
+            logoutButton.style.display =
+                "none";
+
+            // ログアウト中は入力不可
+            todoInput.disabled = true;
+
+            renderTodos();
+
+        }
+
     }
-
-
-    if (user) {
-
-        // --------------------------
-        // ログインしている場合
-        // --------------------------
-
-        currentUser = user;
-
-        console.log("ログインしました");
-        console.log(user);
-
-        userInfo.textContent =
-            `${user.displayName} でログイン中`;
-
-        loginButton.style.display = "none";
-        logoutButton.style.display = "inline-block";
-
-        // 入力を許可
-        todoInput.disabled = false;
-
-        // FirestoreのToDoを監視
-        startTodoListener();
-
-    } else {
-
-        // --------------------------
-        // ログアウトしている場合
-        // --------------------------
-
-        console.log("ログアウトしています");
-
-        currentUser = null;
-
-        todos = [];
-
-        userInfo.textContent = "";
-
-        loginButton.style.display = "inline-block";
-        logoutButton.style.display = "none";
-
-        // ログアウト中は入力不可
-        todoInput.disabled = true;
-
-        renderTodos();
-    }
-
-});
+);
 
 
 // ==============================
@@ -213,59 +268,89 @@ function startTodoListener() {
         return;
     }
 
+
     // 自分専用のtodosコレクション
-    const todosCollection = collection(
-        db,
-        "users",
-        currentUser.uid,
-        "todos"
-    );
+    const todosCollection =
+        collection(
+            db,
+            "users",
+            currentUser.uid,
+            "todos"
+        );
+
 
     // Firestoreを監視する
-    unsubscribeTodos = onSnapshot(
-        todosCollection,
+    unsubscribeTodos =
+        onSnapshot(
 
-        (snapshot) => {
+            todosCollection,
 
-            todos = [];
+            (snapshot) => {
 
-            snapshot.forEach((document) => {
-
-                const data = document.data();
-
-                todos.push({
-                    id: document.id,
-                    text: data.text,
-                    completed: data.completed,
-                    createdAt: data.createdAt
-                });
-
-            });
+                // 一度配列を空にする
+                todos = [];
 
 
-            // 作成順に並べる
-            todos.sort((a, b) => {
+                // Firestoreのデータを
+                // todos配列に入れる
+                snapshot.forEach(
+                    (document) => {
 
-                return (a.createdAt || 0) -
-                       (b.createdAt || 0);
+                        const data =
+                            document.data();
 
-            });
+                        todos.push({
+
+                            id:
+                                document.id,
+
+                            text:
+                                data.text,
+
+                            completed:
+                                data.completed,
+
+                            createdAt:
+                                data.createdAt
+
+                        });
+
+                    }
+                );
 
 
-            // 画面を更新
-            renderTodos();
+                // 作成順に並べる
+                todos.sort(
+                    (a, b) => {
 
-        },
+                        return (
+                            (a.createdAt || 0) -
+                            (b.createdAt || 0)
+                        );
 
-        (error) => {
+                    }
+                );
 
-            console.error(
-                "Firestore読み込みエラー:",
-                error
-            );
 
-        }
-    );
+                // 画面を更新
+                renderTodos();
+
+                // 初回読み込み完了
+                initialLoadFinished = true;
+
+            },
+
+            (error) => {
+
+                console.error(
+                    "Firestore読み込みエラー:",
+                    error
+                );
+
+            }
+
+        );
+
 }
 
 
@@ -275,23 +360,40 @@ function startTodoListener() {
 
 function renderTodos() {
 
+    // --------------------------
     // 一度すべて消す
+    // --------------------------
+
     todoList.replaceChildren();
 
 
+    // --------------------------
     // 完了数
+    // --------------------------
+
     const completedTotal =
-        todos.filter((todo) => {
-            return todo.completed;
-        }).length;
+        todos.filter(
+            (todo) => {
+
+                return todo.completed;
+
+            }
+        ).length;
 
 
+    // --------------------------
     // 未完了数
+    // --------------------------
+
     const remainingTotal =
-        todos.length - completedTotal;
+        todos.length -
+        completedTotal;
 
 
+    // --------------------------
     // 件数を表示
+    // --------------------------
+
     totalCount.textContent =
         todos.length;
 
@@ -302,169 +404,489 @@ function renderTodos() {
         completedTotal;
 
 
-    // タスクが0件ならメッセージ表示
+    // ==========================
+    // フィルター
+    // ==========================
+
+    let filteredTodos = todos;
+
+
+    // 未完了のみ
+    if (
+        currentFilter ===
+        "remaining"
+    ) {
+
+        filteredTodos =
+            todos.filter(
+                (todo) => {
+
+                    return !todo.completed;
+
+                }
+            );
+
+    }
+
+
+    // 完了のみ
+    if (
+        currentFilter ===
+        "completed"
+    ) {
+
+        filteredTodos =
+            todos.filter(
+                (todo) => {
+
+                    return todo.completed;
+
+                }
+            );
+
+    }
+
+
+    // ==========================
+    // タスクがない場合
+    // ==========================
+
     emptyMessage.classList.toggle(
         "is-hidden",
-        todos.length > 0
+        filteredTodos.length > 0
     );
 
 
+    if (filteredTodos.length === 0) {
+
+        if (
+            currentFilter ===
+            "remaining"
+        ) {
+
+            emptyMessage.textContent =
+                "未完了のタスクはありません。";
+
+        } else if (
+            currentFilter ===
+            "completed"
+        ) {
+
+            emptyMessage.textContent =
+                "完了したタスクはありません。";
+
+        } else {
+
+            emptyMessage.textContent =
+                "タスクはまだありません。";
+
+        }
+
+    }
+
+
+    // ==========================
     // ToDoを1件ずつ表示
-    todos.forEach((todo) => {
+    // ==========================
 
-        const listItem =
-            document.createElement("li");
+    filteredTodos.forEach(
+        (todo) => {
 
-        listItem.className =
-            "todo-item";
+            // --------------------------
+            // タスクカード
+            // --------------------------
 
+            const listItem =
+                document.createElement(
+                    "li"
+                );
 
-        listItem.classList.toggle(
-            "is-completed",
-            todo.completed
-        );
-
-
-        // --------------------------
-        // チェックボックス
-        // --------------------------
-
-        const checkbox =
-            document.createElement("input");
-
-        checkbox.type = "checkbox";
-
-        checkbox.className =
-            "todo-checkbox";
-
-        checkbox.checked =
-            todo.completed;
+            listItem.className =
+                "todo-item";
 
 
-        // 完了状態変更
-        checkbox.addEventListener(
-            "change",
-            async () => {
+            // 完了済みなら
+            // is-completedを付ける
+            listItem.classList.toggle(
+                "is-completed",
+                todo.completed
+            );
 
-                if (currentUser === null) {
-                    return;
-                }
 
-                try {
+            // ==========================
+            // 追加アニメーション
+            // ==========================
 
-                    const todoReference = doc(
-                        db,
-                        "users",
-                        currentUser.uid,
-                        "todos",
-                        todo.id
+            if (
+                initialLoadFinished &&
+                todo.id === newlyAddedTodoId
+            ) {
+
+                listItem.classList.add(
+                    "task-enter"
+                );
+
+
+                requestAnimationFrame(
+                    () => {
+
+                        requestAnimationFrame(
+                            () => {
+
+                                listItem.classList.add(
+                                    "task-enter-active"
+                                );
+
+                            }
+                        );
+
+                    }
+                );
+
+            }
+
+
+            // --------------------------
+            // チェックボックス
+            // --------------------------
+
+            const checkbox =
+                document.createElement(
+                    "input"
+                );
+
+            checkbox.type =
+                "checkbox";
+
+            checkbox.className =
+                "todo-checkbox";
+
+            checkbox.checked =
+                todo.completed;
+
+
+            // ==========================
+            // 完了状態変更
+            // ==========================
+
+            checkbox.addEventListener(
+                "change",
+                async () => {
+
+                    if (
+                        currentUser ===
+                        null
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    // すぐに見た目を変える
+                    listItem.classList.toggle(
+                        "is-completed",
+                        checkbox.checked
                     );
 
-                    await updateDoc(
-                        todoReference,
-                        {
-                            completed:
-                                checkbox.checked
+
+                    // チェックした瞬間の
+                    // 小さなアニメーション
+                    listItem.classList.add(
+                        "just-changed"
+                    );
+
+
+                    setTimeout(
+                        () => {
+
+                            listItem.classList.remove(
+                                "just-changed"
+                            );
+
+                        },
+                        250
+                    );
+
+
+                    try {
+
+                        const todoReference =
+                            doc(
+                                db,
+                                "users",
+                                currentUser.uid,
+                                "todos",
+                                todo.id
+                            );
+
+
+                        await updateDoc(
+                            todoReference,
+                            {
+
+                                completed:
+                                    checkbox.checked
+
+                            }
+                        );
+
+                    } catch (error) {
+
+                        console.error(
+                            "更新エラー:",
+                            error
+                        );
+
+                    }
+
+                }
+            );
+
+
+            // --------------------------
+            // タスク名
+            // --------------------------
+
+            const text =
+                document.createElement(
+                    "span"
+                );
+
+            text.className =
+                "todo-text";
+
+            text.textContent =
+                todo.text;
+
+
+            // ==========================
+            // ゴミ箱ボタン
+            // ==========================
+
+            const deleteButton =
+                document.createElement(
+                    "button"
+                );
+
+            deleteButton.type =
+                "button";
+
+            deleteButton.className =
+                "delete-button";
+
+
+            // SVGでゴミ箱を描画
+            deleteButton.innerHTML = `
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path
+                        d="M3 6h18"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                    />
+
+                    <path
+                        d="M8 6V4h8v2"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                    />
+
+                    <path
+                        d="M6 6l1 15h10l1-15"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linejoin="round"
+                    />
+
+                    <path
+                        d="M10 10v7M14 10v7"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                    />
+                </svg>
+            `;
+
+
+            // 読み上げ機能用
+            deleteButton.setAttribute(
+                "aria-label",
+                "タスクを削除"
+            );
+
+
+            // ==========================
+            // 削除処理
+            // ==========================
+
+            deleteButton.addEventListener(
+                "click",
+                async () => {
+
+                    if (
+                        currentUser ===
+                        null
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    // ----------------------
+                    // 削除アニメーション
+                    // ----------------------
+
+                    listItem.classList.add(
+                        "deleting"
+                    );
+
+
+                    // 250ms待つ
+                    await new Promise(
+                        (resolve) => {
+
+                            setTimeout(
+                                resolve,
+                                250
+                            );
+
                         }
                     );
 
-                } catch (error) {
 
-                    console.error(
-                        "更新エラー:",
-                        error
-                    );
+                    try {
 
-                }
-
-            }
-        );
-
-
-        // --------------------------
-        // タスク名
-        // --------------------------
-
-        const text =
-            document.createElement("span");
-
-        text.className =
-            "todo-text";
-
-        text.textContent =
-            todo.text;
+                        const todoReference =
+                            doc(
+                                db,
+                                "users",
+                                currentUser.uid,
+                                "todos",
+                                todo.id
+                            );
 
 
-        // --------------------------
-        // 削除ボタン
-        // --------------------------
+                        // Firestoreから削除
+                        await deleteDoc(
+                            todoReference
+                        );
 
-        const deleteButton =
-            document.createElement("button");
+                    } catch (error) {
 
-        deleteButton.type =
-            "button";
-
-        deleteButton.className =
-            "delete-button";
-
-        deleteButton.textContent =
-            "削除";
+                        console.error(
+                            "削除エラー:",
+                            error
+                        );
 
 
-        deleteButton.addEventListener(
-            "click",
-            async () => {
+                        // 削除に失敗したら
+                        // 元の表示に戻す
+                        listItem.classList.remove(
+                            "deleting"
+                        );
 
-                if (currentUser === null) {
-                    return;
-                }
-
-                try {
-
-                    const todoReference = doc(
-                        db,
-                        "users",
-                        currentUser.uid,
-                        "todos",
-                        todo.id
-                    );
-
-                    await deleteDoc(
-                        todoReference
-                    );
-
-                } catch (error) {
-
-                    console.error(
-                        "削除エラー:",
-                        error
-                    );
+                    }
 
                 }
-
-            }
-        );
+            );
 
 
-        // HTMLに追加
-        listItem.append(
-            checkbox,
-            text,
-            deleteButton
-        );
+            // ==========================
+            // HTMLに追加
+            // ==========================
 
-        todoList.appendChild(
-            listItem
-        );
+            listItem.append(
+                checkbox,
+                text,
+                deleteButton
+            );
 
-    });
+
+            todoList.appendChild(
+                listItem
+            );
+
+        }
+    );
+
+
+    // 追加アニメーションは
+    // 1回だけ実行する
+    newlyAddedTodoId = null;
 
 }
 
 
 // ==============================
-// 10. 新しいToDoを追加
+// 10. タスク表示フィルター
+// ==============================
+
+filterButtons.forEach(
+    (button) => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                // ----------------------
+                // 選択したフィルター
+                // ----------------------
+
+                currentFilter =
+                    button.dataset.filter;
+
+
+                // ----------------------
+                // 全ボタンから
+                // activeを削除
+                // ----------------------
+
+                filterButtons.forEach(
+                    (item) => {
+
+                        item.classList.remove(
+                            "active"
+                        );
+
+                    }
+                );
+
+
+                // ----------------------
+                // 押したボタンだけ
+                // activeにする
+                // ----------------------
+
+                button.classList.add(
+                    "active"
+                );
+
+
+                // ----------------------
+                // 再表示
+                // ----------------------
+
+                renderTodos();
+
+            }
+        );
+
+    }
+);
+
+
+// ==============================
+// 11. 新しいToDoを追加
 // ==============================
 
 todoForm.addEventListener(
@@ -474,7 +896,10 @@ todoForm.addEventListener(
         event.preventDefault();
 
 
-        // ログインしているか確認
+        // --------------------------
+        // ログイン確認
+        // --------------------------
+
         if (currentUser === null) {
 
             alert(
@@ -482,8 +907,13 @@ todoForm.addEventListener(
             );
 
             return;
+
         }
 
+
+        // --------------------------
+        // 入力文字を取得
+        // --------------------------
 
         const taskText =
             todoInput.value.trim();
@@ -491,39 +921,66 @@ todoForm.addEventListener(
 
         // 空欄なら追加しない
         if (taskText === "") {
+
             return;
+
         }
 
 
+        // --------------------------
         // タスクIDを作成
+        // --------------------------
+
         const todoId =
             crypto.randomUUID();
 
 
-        // 保存場所
-        const todoReference = doc(
-            db,
-            "users",
-            currentUser.uid,
-            "todos",
-            todoId
-        );
+        // このIDを追加アニメーションさせる
+        newlyAddedTodoId =
+            todoId;
+
+
+        // --------------------------
+        // Firestoreの保存場所
+        // --------------------------
+
+        const todoReference =
+            doc(
+                db,
+                "users",
+                currentUser.uid,
+                "todos",
+                todoId
+            );
 
 
         try {
 
+            // ----------------------
             // Firestoreへ保存
+            // ----------------------
+
             await setDoc(
                 todoReference,
                 {
-                    text: taskText,
-                    completed: false,
-                    createdAt: Date.now()
+
+                    text:
+                        taskText,
+
+                    completed:
+                        false,
+
+                    createdAt:
+                        Date.now()
+
                 }
             );
 
 
+            // ----------------------
             // 入力欄を空にする
+            // ----------------------
+
             todoInput.value = "";
 
             todoInput.focus();
@@ -536,6 +993,9 @@ todoForm.addEventListener(
                 error
             );
 
+            // 失敗した場合はリセット
+            newlyAddedTodoId = null;
+
             alert(
                 "タスクを保存できませんでした。"
             );
@@ -547,7 +1007,7 @@ todoForm.addEventListener(
 
 
 // ==============================
-// 11. 最初の表示
+// 12. 最初の表示
 // ==============================
 
 // ログイン確認が終わるまでは入力不可
@@ -556,32 +1016,41 @@ todoInput.disabled = true;
 // 空の状態を表示
 renderTodos();
 
+
 // ==============================
-// Service Workerを登録
+// 13. Service Workerを登録
 // ==============================
 
 if ("serviceWorker" in navigator) {
 
-    window.addEventListener("load", () => {
+    window.addEventListener(
+        "load",
+        () => {
 
-        navigator.serviceWorker
-            .register("./service-worker.js")
-            .then(() => {
+            navigator
+                .serviceWorker
+                .register(
+                    "./service-worker.js"
+                )
+                .then(() => {
 
-                console.log(
-                    "Service Workerを登録しました"
+                    console.log(
+                        "Service Workerを登録しました"
+                    );
+
+                })
+                .catch(
+                    (error) => {
+
+                        console.error(
+                            "Service Worker登録エラー:",
+                            error
+                        );
+
+                    }
                 );
 
-            })
-            .catch((error) => {
-
-                console.error(
-                    "Service Worker登録エラー:",
-                    error
-                );
-
-            });
-
-    });
+        }
+    );
 
 }

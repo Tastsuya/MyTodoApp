@@ -1,93 +1,272 @@
-
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ToDoアプリ</title>
 
-    <!-- CSSファイルを読み込む -->
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <title>My ToDo</title>
+
+    <!-- CSS -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- pwa-->
+    <!-- PWA -->
     <link rel="manifest" href="./manifest.json">
 
-    <!--iphone-->
+    <!-- iPhone -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-
     <meta
         name="apple-mobile-web-app-status-bar-style"
-        content="default"
+        content="black-translucent"
     >
-
     <meta
         name="apple-mobile-web-app-title"
-        content="ToDo"
+        content="My ToDo"
     >
+
     <link
         rel="apple-touch-icon"
         href="./icons/icon-192.png"
     >
 
-    <!-- JavaScriptファイルを読み込む -->
+    <!-- JavaScript -->
     <script type="module" src="script.js"></script>
 </head>
+
 <body>
-    <main class="app">
-        <header class="app-header">
-            <h1>ToDoリスト</h1>
 
-            <!--ログイン部分 -->
-            <div id="login-area">
-                <button id="login-button">Googleでログイン</button>
-                <button id="logout-button" style="display: none;">ログアウト</button>
-                <p id="user-info"></p>
-            </div>
+    <!-- =========================
+         緑色のヘッダー
+    ========================== -->
+    <header class="hero">
 
-            <p>今日やることを整理しよう！</p>
-        </header>
+        <div class="hero-inner">
 
-        <!-- タスクの件数を表示 -->
-        <section class="summary">
-            <div class="summary-item">
-                <span class="summary-label">すべて</span>
-                <span id="total-count">0</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">未完了</span>
-                <span id="remaining-count">0</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">完了</span>
-                <span id="completed-count">0</span>
-            </div>
-        </section>
+            <div class="brand">
 
-        <!-- タスクを追加するフォーム -->
-        <form id="task-form">
-            <label for="task-input">新しいタスク</label>
-            <div class="input-row">
-                <input
-                    type="text"
-                    id="task-input"
-                    placeholder="例：レポートを作成する"
-                    maxlength="100"
-                    required
+                <img
+                    src="./icons/icon-192.png"
+                    alt=""
+                    class="app-icon"
                 >
-                <button type="submit" id="add-button">追加</button>
-            </div>
-        </form>
 
-        <!-- タスク一覧 -->
-        <section class="task-section">
-            <h2>タスク一覧</h2>
-            <p id="empty-message">タスクはまだありません。</p>
-            <ul id="task-list"></ul>
+                <div>
+                    <h1>My ToDo</h1>
+                    <p>今日もやることを整理しよう！</p>
+                </div>
+
+            </div>
+
+            <!-- ログイン・ログアウト -->
+            <div id="login-area" class="login-area">
+
+                <button
+                    id="login-button"
+                    class="login-button"
+                >
+                    Googleでログイン
+                </button>
+
+                <button
+                    id="logout-button"
+                    class="logout-button"
+                    style="display: none;"
+                >
+                    ログアウト
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================
+         アプリ本体
+    ========================== -->
+    <main class="app">
+
+
+        <!-- ログインユーザー -->
+        <section class="user-section">
+
+            <div class="user-icon">
+                👤
+            </div>
+
+            <p id="user-info"></p>
+
         </section>
 
-        <footer>
-            <p>タスクはこのブラウザに保存されます。</p>
+
+        <!-- =====================
+             件数
+        ====================== -->
+        <section class="summary">
+
+            <div class="summary-card">
+
+                <div class="summary-icon all-icon">
+                    ☷
+                </div>
+
+                <span>すべて</span>
+
+                <strong id="total-count">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon remaining-icon">
+                    ◷
+                </div>
+
+                <span>未完了</span>
+
+                <strong id="remaining-count">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-icon completed-icon">
+                    ✓
+                </div>
+
+                <span>完了</span>
+
+                <strong id="completed-count">
+                    0
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================
+             新規タスク
+        ====================== -->
+        <section class="add-card">
+
+            <h2>
+                新しいタスクを追加
+            </h2>
+
+            <form id="task-form">
+
+                <div class="input-row">
+
+                    <input
+                        type="text"
+                        id="task-input"
+                        placeholder="例：レポートを作成する"
+                        maxlength="100"
+                        required
+                    >
+
+                    <button
+                        type="submit"
+                        id="add-button"
+                    >
+                        ＋
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+
+        <!-- =====================
+             タスク一覧
+        ====================== -->
+        <section class="task-section">
+
+            <div class="section-title">
+
+                <h2>
+                    タスク一覧
+                </h2>
+
+                <div class="filter-buttons">
+
+                    <button
+                        type="button"
+                        class="filter-button active"
+                        data-filter="all"
+                    >
+                        すべて
+                    </button>
+
+                    <button
+                        type="button"
+                        class="filter-button"
+                        data-filter="remaining"
+                    >
+                         未完了
+                    </button>
+
+                    <button
+                        type="button"
+                        class="filter-button"
+                        data-filter="completed"
+                    >
+                        完了
+                    </button>
+
+                </div>
+
+
+            </div>
+
+
+            <p id="empty-message">
+                タスクはまだありません。
+            </p>
+
+
+            <ul id="task-list"></ul>
+
+        </section>
+
+
+        <!-- =====================
+             クラウド同期
+        ====================== -->
+        <footer class="cloud-info">
+
+            <div class="cloud-icon">
+                ☁
+            </div>
+
+            <div>
+                <strong>
+                    クラウド同期
+                </strong>
+
+                <p>
+                    タスクはクラウドに保存され、
+                    複数の端末で同期されます。
+                </p>
+            </div>
+
         </footer>
+
     </main>
+
 </body>
 </html>
