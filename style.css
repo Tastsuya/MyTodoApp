@@ -1,0 +1,232 @@
+
+/* すべての要素で、余白を計算しやすくする */
+* {
+    box-sizing: border-box;
+}
+
+/* 画面全体の基本設定 */
+body {
+    margin: 0;
+    padding: 24px 16px;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Helvetica Neue",
+        "Hiragino Kaku Gothic ProN",
+        "Yu Gothic",
+        sans-serif;
+    background-color: #f4f7fb;
+    color: #243247;
+    line-height: 1.6;
+}
+
+/* アプリ本体。スマートフォンでも横に広がりすぎないようにする */
+.app {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+/* タイトル部分 */
+.app-header {
+    margin-bottom: 24px;
+}
+
+.app-header h1 {
+    margin: 0;
+    font-size: 32px;
+    color: #24446b;
+}
+
+.app-header p {
+    margin: 4px 0 0;
+    color: #718096;
+    font-size: 14px;
+}
+
+/* タスク件数を横に3つ並べる */
+.summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 28px;
+}
+
+/* 件数カードのデザイン */
+.summary-card {
+    padding: 14px 8px;
+    background-color: #ffffff;
+    border: 1px solid #e1e8f0;
+    border-radius: 14px;
+    text-align: center;
+}
+
+/* 件数カードの説明 */
+.summary-card span {
+    display: block;
+    color: #718096;
+    font-size: 12px;
+}
+
+/* 件数の数字 */
+.summary-card strong {
+    display: block;
+    margin-top: 4px;
+    color: #24446b;
+    font-size: 24px;
+}
+
+/* 入力欄とタスク一覧の見出し */
+.add-section h2,
+.list-section h2 {
+    margin: 0 0 12px;
+    font-size: 18px;
+}
+
+/* 入力欄と追加ボタンを横並びにする */
+#todo-form {
+    display: flex;
+    gap: 8px;
+}
+
+/* タスク入力欄 */
+#todo-input {
+    min-width: 0;
+    flex: 1;
+    padding: 13px 12px;
+    border: 1px solid #d6deea;
+    border-radius: 10px;
+    background-color: #ffffff;
+    color: #243247;
+    font-size: 16px;
+}
+
+/* 入力欄が選択されたときの枠線 */
+#todo-input:focus {
+    outline: 2px solid #9bbce9;
+    outline-offset: 1px;
+}
+
+/* 追加ボタン */
+.add-button {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 10px;
+    background-color: #3678d4;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* ボタンを押せることがわかるようにする */
+.add-button:active {
+    background-color: #245da9;
+}
+
+/* タスク一覧の領域 */
+.list-section {
+    margin-top: 32px;
+}
+
+/* タスク一覧の余白をリセットする */
+#todo-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* タスク1件分のカード */
+.todo-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 12px;
+    background-color: #ffffff;
+    border: 1px solid #e1e8f0;
+    border-radius: 12px;
+}
+
+/* 完了チェックボックスを押しやすくする */
+.todo-checkbox {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    margin: 0;
+    accent-color: #3678d4;
+    cursor: pointer;
+}
+
+/* タスク名。長い文字列も折り返す */
+.todo-text {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-size: 15px;
+}
+
+/* 完了したタスクの文字 */
+.todo-item.is-completed .todo-text {
+    color: #8995a5;
+    text-decoration: line-through;
+}
+
+/* 削除ボタン */
+.delete-button {
+    flex-shrink: 0;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 8px;
+    background-color: #fff0f0;
+    color: #c13e3e;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+/* タスクがないときのメッセージ */
+#empty-message {
+    padding: 24px 12px;
+    color: #8995a5;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* JavaScriptで非表示にするときに使う */
+.is-hidden {
+    display: none;
+}
+
+/* 視覚的には隠しつつ、読み上げ機能では使えるラベル */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* 画面が特に狭いスマートフォンでの調整 */
+@media (max-width: 360px) {
+    body {
+        padding: 18px 12px;
+    }
+
+    .app-header h1 {
+        font-size: 28px;
+    }
+
+    .summary {
+        gap: 6px;
+    }
+
+    .add-button {
+        padding: 12px;
+    }
+}

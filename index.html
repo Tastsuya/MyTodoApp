@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDoアプリ</title>
+
+    <!-- CSSファイルを読み込む -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- JavaScriptファイルを読み込む -->
+    <script type="module" src="script.js"></script>
+</head>
+<body>
+    <main class="app">
+        <header class="app-header">
+            <h1>ToDoリスト</h1>
+
+            <!--ログイン部分 -->
+            <div id="login-area">
+                <button id="login-button">Googleでログイン</button>
+                <button id="logout-button" style="display: none;">ログアウト</button>
+                <p id="user-info"></p>
+            </div>
+
+            <p>今日やることを整理しよう！</p>
+        </header>
+
+        <!-- タスクの件数を表示 -->
+        <section class="summary">
+            <div class="summary-item">
+                <span class="summary-label">すべて</span>
+                <span id="total-count">0</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">未完了</span>
+                <span id="remaining-count">0</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">完了</span>
+                <span id="completed-count">0</span>
+            </div>
+        </section>
+
+        <!-- タスクを追加するフォーム -->
+        <form id="task-form">
+            <label for="task-input">新しいタスク</label>
+            <div class="input-row">
+                <input
+                    type="text"
+                    id="task-input"
+                    placeholder="例：レポートを作成する"
+                    maxlength="100"
+                    required
+                >
+                <button type="submit" id="add-button">追加</button>
+            </div>
+        </form>
+
+        <!-- タスク一覧 -->
+        <section class="task-section">
+            <h2>タスク一覧</h2>
+            <p id="empty-message">タスクはまだありません。</p>
+            <ul id="task-list"></ul>
+        </section>
+
+        <footer>
+            <p>タスクはこのブラウザに保存されます。</p>
+        </footer>
+    </main>
+</body>
+</html>
