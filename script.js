@@ -555,3 +555,33 @@ todoInput.disabled = true;
 
 // 空の状態を表示
 renderTodos();
+
+// ==============================
+// Service Workerを登録
+// ==============================
+
+if ("serviceWorker" in navigator) {
+
+    window.addEventListener("load", () => {
+
+        navigator.serviceWorker
+            .register("./service-worker.js")
+            .then(() => {
+
+                console.log(
+                    "Service Workerを登録しました"
+                );
+
+            })
+            .catch((error) => {
+
+                console.error(
+                    "Service Worker登録エラー:",
+                    error
+                );
+
+            });
+
+    });
+
+}

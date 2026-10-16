@@ -1,0 +1,10 @@
+{
+    "name": "My ToDo App",
+    "short_name": "ToDo",
+    "description": "自分専用のToDo管理アプリ",
+    "start_url": "./",
+    "scope": "./",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#ffffff"
+}
